@@ -90,7 +90,7 @@ export default function Flight(props) {
         Data.map((detail, index) => (
           <div key={index}>
             <h1>Users</h1>
-          <p>{detail.flight_time}</p>
+            <h3>Flight Status</h3>
             <FormControlLabel
               control={
                 <Checkbox
@@ -138,7 +138,6 @@ export default function Flight(props) {
             <div key={index}>
               <h1>Admin</h1>
               <h3>Flight Status</h3>
-
               <FormControlLabel
                 control={
                   <Checkbox

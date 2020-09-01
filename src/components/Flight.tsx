@@ -39,7 +39,7 @@ export default function Flight(props) {
     fetch(process.env.REACT_APP_NODE_API)
       .then((res) => res.json())
       .then((data) => {
-        data.message[0].flight_status === "CANCELLED" &&
+        data.message[0].flight_status === "SCHEDULED" &&
           setcheckedB(  true );
           data.message[0].flight_cancel === "True" &&
           setcheckedC(  true );

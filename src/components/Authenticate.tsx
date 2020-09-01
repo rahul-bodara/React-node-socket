@@ -1,6 +1,7 @@
 import React,{useState , useEffect} from 'react'
 import { getUser } from '../middleware'
 import { withRouter } from 'react-router-dom'
+import Axios from 'axios'
 
 const Authenticate = (props) => {
 
@@ -8,21 +9,23 @@ const Authenticate = (props) => {
 
     useEffect(()=>{
         const jwt = getUser()
-
-
-        if(jwt.user === null){
+        if(!jwt){
             props.history.push('/login')
         }
-        else{
-            setState(jwt.user)
-        }
+
+        Axios.get(process.env.REACT_APP_NODE_API,{ headers : {authorization : `Bearer ${jwt}` }})
+        .then(res =>  setState({user : res}))
+        .catch(err => {
+            localStorage.removeItem('cool-jwt')
+            props.history.push('/login')
+        })
 
 
-    })
+    },[])
 
 
 
-        if(state == undefined){
+        if(state === undefined){
             return(
                 <h1>Loading....</h1>
             )

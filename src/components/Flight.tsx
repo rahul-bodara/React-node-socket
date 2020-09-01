@@ -8,7 +8,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import io from "socket.io-client";
 import { getUser } from "../middleware";
 import Axios from "axios";
-
+import jwt_decode from 'jwt-decode';
 const socket = io(process.env.REACT_APP_NODE_API);
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +33,8 @@ export default function Flight(props) {
   const [checkedC, setcheckedC] = useState(false)
   const [Id, setId] = useState('')
   const [Time, setTime] = useState('')
-  const role = getUser();
+  var role = jwt_decode(getUser());
+
 
   useEffect(() => {
     fetch(process.env.REACT_APP_NODE_API)
@@ -65,8 +66,7 @@ export default function Flight(props) {
   }
 
   const logout = (e) => {
-    localStorage.removeItem("username");
-    localStorage.removeItem("role");
+    localStorage.removeItem("jwt-cool");
     props.history.push("/login");
   };
 

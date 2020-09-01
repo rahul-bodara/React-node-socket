@@ -2,7 +2,9 @@
 import connection from './connection'
 const knex = require('knex')(connection);
 const { getIo } = require('../soket_event.ts');
-
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const Auth = require('../middlewares/checkAuth');
 
 // knex.schema.createTable('flight_status', (table) => {
 //     table.increments('id')
@@ -31,7 +33,7 @@ const { getIo } = require('../soket_event.ts');
 
 async function routes(fastify, opts, next) {
     // Get Weather Data
-    fastify.get('/', async (req, res) => {
+    fastify.get('/',Auth , async (req, res) => {
         knex.from('flight_status').select("*")
             .then((rows: any) => {
                 res.status(200).send({ status: '200 Ok', message: rows });
@@ -49,9 +51,26 @@ async function routes(fastify, opts, next) {
         const password = req.body.password
 
         // Fetch data from DB
-        knex.from('users').select("*").where('username', '=', username).where('password', '=', password)
-            .then((rows: any) => {
-                res.status(200).send({ status: '200 Ok', message: rows });
+        knex.from('users').select("*").where('username', '=', username)
+            .then(async (rows: any) => {
+                let isPasswordMatched = await bcrypt.compare(password,rows[0].password)
+
+                if(isPasswordMatched){
+                    console.log("login sucessfull")
+                    let payload = {
+                        username : rows[0].username,
+                        role : rows[0].role
+                    }
+                    let token = jwt.sign(payload, 'secret')
+                    res.status(200).send({ status: '200 Ok', message: token });
+
+                }
+                else{
+                     res.status(401).send({
+                        message : 'Passqord Incorrect'
+                    })
+                }
+                //
             })
             .catch((err) => { console.log(err); throw err })
             .finally(() => {

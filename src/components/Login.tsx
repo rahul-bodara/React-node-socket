@@ -67,7 +67,7 @@ export default function Login(props) {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Login
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
@@ -100,7 +100,7 @@ export default function Login(props) {
             className={classes.submit}
             onClick={e => login(e)}
           >
-            Sign In
+            SignIn
           </Button>
           {/* <Grid container>
             <Grid item xs>

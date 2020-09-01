@@ -37,7 +37,8 @@
     "lodash": "^4.17.15",
     "mysql": "^2.17.1",
     "request": "^2.88.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "supertest": "^4.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",

@@ -90,7 +90,6 @@ export default function Flight(props) {
         Data.map((detail, index) => (
           <div key={index}>
             <h1>Users</h1>
-            <h3>Flight Status</h3>
           <p>{detail.flight_time}</p>
             <FormControlLabel
               control={

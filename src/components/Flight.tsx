@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { makeStyles } from "@material-ui/core/styles";
@@ -14,16 +12,6 @@ import Axios from "axios";
 const socket = io(process.env.REACT_APP_NODE_API);
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
   form: {
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
@@ -41,9 +29,9 @@ const useStyles = makeStyles((theme) => ({
 export default function Flight(props) {
   const [Data, setData]: any = useState([]);
   const classes = useStyles();
-  const [checkedA, setcheckedA] = useState(false)
   const [checkedB, setcheckedB] = useState(false)
   const [checkedC, setcheckedC] = useState(false)
+  const [Id, setId] = useState('')
   const [Time, setTime] = useState('')
   const role = getUser();
 
@@ -52,22 +40,29 @@ export default function Flight(props) {
       .then((res) => res.json())
       .then((data) => {
         data.message[0].flight_status === "CANCELLED" &&
-        setcheckedA( true);
-          data.message[0].flight_status === "SCHEDULED" &&
           setcheckedB(  true );
           data.message[0].flight_cancel === "True" &&
           setcheckedC(  true );
-          setTime(data.message[0].time)
-        setData(data.message);
+          setTime(data.message[0].flight_time)
+          setId(data.message[0].id)
+          setData(data.message);
       })
       .catch((err) => console.log(err));
 
     socket.on("recived_data", (data) => {
-      console.log(data);
+      setData(data);
     });
   }, []);
 
 
+  const handleChange = (e) =>{
+    setcheckedB(e.target.checked)
+    setcheckedC(false)
+  }
+  const targetChange = e =>{
+    setcheckedC(e.target.checked)
+    setcheckedB(false)
+  }
 
   const logout = (e) => {
     localStorage.removeItem("username");
@@ -77,19 +72,17 @@ export default function Flight(props) {
 
   const update = (data) => {
     const updateData = {
-      flight_cancel: checkedC,
-      flight_status: checkedA === true ?  "CANCELLED" : "SCHEDULED",
+      flight_cancel: checkedC === true ? 'True' : 'False',
+      flight_status: checkedC === true ?  "REINSTATE FLIGHT" : "SCHEDULED",
       flight_time: Time ,
-      id: 1
+      id: Id
     }
 
-    console.log(updateData);
-
-
-    Axios.post(process.env.REACT_APP_NODE_API+'/update')
-
-    // socket.emit("insert data", data)
-  };
+    //Update flight data
+    Axios.post(process.env.REACT_APP_NODE_API+'/update' , updateData)
+    .then((res) => console.log(res))
+    .catch((error) => console.log(error))
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -98,7 +91,7 @@ export default function Flight(props) {
           <div key={index}>
             <h1>Users</h1>
             <h3>Flight Status</h3>
-
+          <p>{detail.flight_time}</p>
             <FormControlLabel
               control={
                 <Checkbox
@@ -107,26 +100,15 @@ export default function Flight(props) {
                   color="primary"
                 />
               }
-              label="SCHEDULED"
+              label={detail.flight_cancel === "True" ? 'REINSTATE FLIGHT' : 'SCHEDULED'}
+              // label="SCHEDULED"
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={detail.flight_status === "CANCELLED" ? true : false}
-
-                  name="checkedA"
-                  color="primary"
-                />
-              }
-              label="IN-FLIGHT or CANCELLED"
-            />
-
             <h3>Flight Time</h3>
             <TextField
               id="time"
               label="Alarm clock"
               type="time"
-              defaultValue={detail.flight_time}
+              value={detail.flight_time}
               className={classes.textField}
               InputLabelProps={{
                 shrink: true,
@@ -145,7 +127,8 @@ export default function Flight(props) {
                   color="primary"
                 />
               }
-              label="IN-FLIGHT or CANCELLED"
+              label={detail.flight_cancel === "True" ? 'CANCELLED' : 'CANCEL_FLIGHT'}
+              // label="IN-FLIGHT or CANCELLED"
             />
           </div>
         ))}
@@ -161,25 +144,14 @@ export default function Flight(props) {
                 control={
                   <Checkbox
                     checked={checkedB}
-                    onChange={ e => setcheckedB(e.target.checked)}
+                    onChange={e => handleChange(e)}
                     name="checkedB"
                     color="primary"
                   />
                 }
-                label="SCHEDULED"
+                label={detail.flight_cancel === "True" ? 'REINSTATE FLIGHT' : 'SCHEDULED'}
+                // label="SCHEDULED"
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                  checked={checkedA}
-                    onChange={ e => setcheckedA(e.target.checked)}
-                    name="checkedA"
-                    color="primary"
-                  />
-                }
-                label="IN-FLIGHT or CANCELLED"
-              />
-
               <h3>Flight Time</h3>
               <TextField
                 id="time"
@@ -203,12 +175,15 @@ export default function Flight(props) {
                     checked={
                       checkedC
                     }
-                    onChange={ e => setcheckedC(e.target.checked)}
+                    onChange={e => targetChange(e)}
+                    //  e => setcheckedC(e.target.checked)
                     name="checkedC"
                     color="primary"
                   />
                 }
-                label="IN-FLIGHT or CANCELLED"
+                // label="IN-FLIGHT or CANCELLED"
+              label={detail.flight_cancel === "True" ? 'CANCELLED' : 'CANCEL_FLIGHT'}
+
               />
               <Button
                 type="submit"

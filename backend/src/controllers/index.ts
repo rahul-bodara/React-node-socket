@@ -10,6 +10,7 @@ const { getIo } = require('../soket_event.ts');
 //     table.string('flight_time')
 //     table.string('flight_cancel')
 //     table.date('date')
+//      table.updated_date('date')
 // }).then(() => console.log("table created"))
 // .catch((err) => { console.log(err); throw err })
 // .finally(() => {
@@ -59,41 +60,38 @@ async function routes(fastify, opts, next) {
 
     });
 
-    // Post WeatherData
-    fastify.post('/update', async (req, res) => {
-
-
+    // Flight Update
+    fastify.post('/:update', async (req, res) => {
         const io = getIo();
 
         var today = new Date();
-        let ts = Date.now();
-
-        let date_ob = new Date(ts);
-        let date1 = date_ob.getDate();
-        let month = date_ob.getMonth() + 1;
-        let year = date_ob.getFullYear();
-
-
         const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        console.log(date);
 
-        io.emit("recived_data", date)
+        knex('flight_status')
+        .where('id', req.body.id)
+        .update({
+            flight_cancel: req.body.flight_cancel,
+            flight_status: req.body.flight_status,
+            flight_time: req.body.flight_time,
+            updated_date : date
+        })
+        .then((rowss: any) => {
+            knex.from('flight_status').select("*")
+            .then((rows: any) => {
+                console.log(rows);
 
-        // Fetch data from DB
-        // knex.from('weather').select("*").where('cityName', '=', cityName)
-        //     .then((rows: any) => {
-        //         res.status(200).send({ status: '200 Ok', message: rows });
-        //     })
-        //     .catch((err) => { console.log(err); throw err })
-        //     .finally(() => {
-        //     });
+                io.emit("recived_data", rows)
 
-        // // Insert data in DB
-        // knex('weather').insert(weatherData).then(() => console.log("data inserted"))
-        //     .catch((err) => { console.log(err); throw err })
-        //     .finally(() => {
+            })
+            .catch((err) => { console.log(err); throw err })
+            .finally(() => {
+            });
+        })
+        .catch((err) => { console.log(err); throw err })
+        .finally(() => {
+        });
 
-        //     });
+
     });
 }
 module.exports = routes;

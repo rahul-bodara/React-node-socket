@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Auth = require('../middlewares/checkAuth');
 
+
 // knex.schema.createTable('flight_status', (table) => {
 //     table.increments('id')
 //     table.string('flight_status')
@@ -32,16 +33,25 @@ const Auth = require('../middlewares/checkAuth');
 
 
 async function routes(fastify, opts, next) {
-    // Get Weather Data
-    fastify.get('/',Auth , async (req, res) => {
-        knex.from('flight_status').select("*")
-            .then((rows: any) => {
-                res.status(200).send({ status: '200 Ok', message: rows });
 
-            })
-            .catch((err) => { console.log(err); throw err })
-            .finally(() => {
-            });
+
+    // Get Weather Data
+    fastify.get('/',  async (req, res) => {
+        try {
+            const token = req.headers.authorization
+            const decoded = jwt.verify(token, 'secret');
+            knex.from('flight_status').select("*")
+                .then((rows: any) => {
+                    console.log(rows);
+
+                    res.send({ status: '200 Ok', message: rows });
+
+                })
+                .catch((err) => { console.log(err);})
+        } catch (error) {
+            res.send({ message : 'Unauthorised'})
+
+        }
 
     });
 
@@ -80,12 +90,14 @@ async function routes(fastify, opts, next) {
     });
 
     // Flight Update
-    fastify.post('/:update', async (req, res) => {
+    fastify.post('/:update',  async (req, res) => {
         const io = getIo();
 
         var today = new Date();
         const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-
+        try {
+            const token = req.headers.authorization
+            const decoded = jwt.verify(token, 'secret');
         knex('flight_status')
         .where('id', req.body.id)
         .update({
@@ -109,7 +121,10 @@ async function routes(fastify, opts, next) {
         .catch((err) => { console.log(err); throw err })
         .finally(() => {
         });
-
+    }
+    catch(error){
+        res.send({ message : 'Unauthorised'})
+    }
 
     });
 }

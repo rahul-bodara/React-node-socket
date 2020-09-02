@@ -48,7 +48,7 @@ export default function Login(props) {
       if(jwt){
         props.history.push('/')
       }
-    },[])
+    }, [])
 
   const login = (e) => {
     e.preventDefault();

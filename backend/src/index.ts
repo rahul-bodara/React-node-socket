@@ -1,14 +1,20 @@
-require('dotenv').config();
-
 import fastify from 'fastify';
 import helmet from 'fastify-helmet';
-import cors from 'fastify-cors';
+// import cors from 'fastify-cors';
+require('dotenv').config();
+
 const { intilize } = require('./soket_event.ts');
 
 const app = fastify({ logger: false });
 
 app.register(helmet);
-app.register(cors);
+// app.register(cors);
+
+
+
+
+app.register(require('fastify-cors'), { origin: '*' });
+
 app.register(require('fastify-rate-limit'), {
   max: +process.env.MAX_CONNECTION_PER_MINUTE || 1000,
   timeWindow: '1 minute'
@@ -24,7 +30,7 @@ const start = async () => {
     const io = require('socket.io')(app.server);
     intilize(io)
     const address = await app.listen(port);
-    console.log(`Server listening on ${address}`);
+    console.log(`Server listening on ${port}`);
 
   } catch (err) {
     app.log.error(err);

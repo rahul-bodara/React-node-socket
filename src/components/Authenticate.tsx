@@ -13,7 +13,7 @@ const Authenticate = (props) => {
             props.history.push('/login')
         }
 
-        Axios.get(process.env.REACT_APP_NODE_API,{ headers : {authorization : `Bearer ${jwt}` }})
+        Axios.get(process.env.REACT_APP_NODE_API,{ headers : {authorization : `${jwt}` }})
         .then(res =>  setState({user : res}))
         .catch(err => {
             localStorage.removeItem('cool-jwt')
@@ -21,7 +21,7 @@ const Authenticate = (props) => {
         })
 
 
-    },[])
+    }, [])
 
 
 

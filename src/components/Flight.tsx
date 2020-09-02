@@ -37,7 +37,12 @@ export default function Flight(props) {
 
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_NODE_API)
+    const jwt = getUser()
+        if(!jwt){
+            props.history.push('/login')
+        }
+
+    fetch(process.env.REACT_APP_NODE_API,{ headers : {authorization : `${jwt}` }})
       .then((res) => res.json())
       .then((data) => {
         data.message[0].flight_status === "SCHEDULED" &&
@@ -77,9 +82,12 @@ export default function Flight(props) {
       flight_time: Time ,
       id: Id
     }
-
+    const jwt = getUser()
+        if(!jwt){
+            props.history.push('/login')
+        }
     //Update flight data
-    Axios.post(process.env.REACT_APP_NODE_API+'/update' , updateData)
+    Axios.post(process.env.REACT_APP_NODE_API+'/update' , updateData, { headers : {authorization : `${jwt}` }})
     .then((res) => console.log(res))
     .catch((error) => console.log(error))
   }

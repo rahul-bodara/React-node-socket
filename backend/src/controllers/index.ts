@@ -34,7 +34,7 @@ const bcrypt = require('bcrypt');
 async function routes(fastify, opts, next) {
 
 
-    // Get Weather Data
+    //Get flight data
     fastify.get('/',  async (req, res) => {
         try {
             const token = req.headers.authorization

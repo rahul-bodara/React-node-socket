@@ -7,7 +7,7 @@
     "dev": "nodemon --exec babel-node --extensions '.ts' src/index.ts",
     "build": "babel ./src --extensions '.ts' --out-dir ./dist",
     "test": "jest --config ./jest.config.json",
-    "start": "node ./dist"
+    "start": "nodemon --exec babel-node --extensions '.ts' src/index.ts"
   },
   "keywords": [
     "line",

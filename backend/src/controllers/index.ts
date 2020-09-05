@@ -4,8 +4,6 @@ const knex = require('knex')(connection);
 const { getIo } = require('../soket_event.ts');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const Auth = require('../middlewares/checkAuth');
-
 
 // knex.schema.createTable('flight_status', (table) => {
 //     table.increments('id')

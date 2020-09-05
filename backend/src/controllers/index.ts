@@ -5,6 +5,7 @@ const { getIo } = require('../soket_event.ts');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+
 // knex.schema.createTable('flight_status', (table) => {
 //     table.increments('id')
 //     table.string('flight_status')

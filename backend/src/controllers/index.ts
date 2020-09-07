@@ -1,4 +1,3 @@
-
 import connection from './connection'
 const knex = require('knex')(connection);
 const { getIo } = require('../soket_event.ts');
@@ -41,10 +40,7 @@ async function routes(fastify, opts, next) {
             const decoded = await jwt.verify(token, 'secret');
             knex.from('flight_status').select("*")
                 .then((rows: any) => {
-                    console.log(rows);
-
                     res.send({ status: '200 Ok', message: rows });
-
                 })
                 .catch((err) => { console.log(err);})
         } catch (error) {

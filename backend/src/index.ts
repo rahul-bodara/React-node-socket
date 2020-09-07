@@ -10,9 +10,6 @@ const app = fastify({ logger: false });
 app.register(helmet);
 // app.register(cors);
 
-
-
-
 app.register(require('fastify-cors'), { origin: '*' });
 
 app.register(require('fastify-rate-limit'), {

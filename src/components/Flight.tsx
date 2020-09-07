@@ -9,7 +9,7 @@ import io from "socket.io-client";
 import { getUser } from "../middleware";
 import Axios from "axios";
 import jwt_decode from 'jwt-decode';
-const socket = io(process.env.REACT_APP_NODE_API);
+
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -33,8 +33,11 @@ export default function Flight(props) {
   const [checkedC, setcheckedC] = useState(false)
   const [Id, setId] = useState('')
   const [Time, setTime] = useState('')
-  var role = jwt_decode(getUser());
+  var role = jwt_decode(getUser())
+  var jwt = getUser()
 
+  const socket = io(process.env.REACT_APP_NODE_API,{
+    query: {jwt}})
 
   useEffect(() => {
     const jwt = getUser()

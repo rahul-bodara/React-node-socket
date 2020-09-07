@@ -57,10 +57,12 @@ export default function Flight(props) {
           setData(data.message);
       })
       .catch((err) => console.log(err));
+  if(jwt){
 
     socket.on("recived_data", (data) => {
       setData(data);
     });
+  }
   }, []);
 
 

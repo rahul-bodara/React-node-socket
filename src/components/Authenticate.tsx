@@ -22,9 +22,6 @@ const Authenticate = (props) => {
 
 
     }, [])
-
-
-
         if(state === undefined){
             return(
                 <h1>Loading....</h1>

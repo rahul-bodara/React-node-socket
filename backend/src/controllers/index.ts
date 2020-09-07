@@ -38,7 +38,7 @@ async function routes(fastify, opts, next) {
     fastify.get('/',  async (req, res) => {
         try {
             const token = req.headers.authorization
-            const decoded = jwt.verify(token, 'secret');
+            const decoded = await jwt.verify(token, 'secret');
             knex.from('flight_status').select("*")
                 .then((rows: any) => {
                     console.log(rows);
@@ -96,7 +96,7 @@ async function routes(fastify, opts, next) {
         const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         try {
             const token = req.headers.authorization
-            const decoded = jwt.verify(token, 'secret');
+            const decoded = await jwt.verify(token, 'secret');
         knex('flight_status')
         .where('id', req.body.id)
         .update({
@@ -108,10 +108,7 @@ async function routes(fastify, opts, next) {
         .then((rowss: any) => {
             knex.from('flight_status').select("*")
             .then((rows: any) => {
-                console.log(rows);
-
                 io.emit("recived_data", rows)
-
             })
             .catch((err) => { console.log(err); throw err })
             .finally(() => {
